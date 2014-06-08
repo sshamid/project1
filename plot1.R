@@ -1,0 +1,21 @@
+wd <- getwd()
+datafile <- "household_power_consumption"
+txtfile <- paste(paste(wd, datafile, sep = "/"), ".txt", sep="")
+
+if (!file.exists(txtfile)){
+  dataUrl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+  downloadedzipfile <- paste(paste(wd, datafile, sep = "/"), ".zip", sep="")
+  download.file(dataUrl, destfile = downloadedzipfile, method = "curl")
+  dateDownloaded <- data()
+  unzip(downloadedzipfile)
+}
+
+library(data.table)
+DT <- fread(txtfile, na.strings="?")
+DT <- DT[(DT$Date == "1/2/2007") | (DT$Date == "2/2/2007"), ]
+DT$datetime <- as.POSIXct(DT$Date, format="%d/%m/%Y") + as.ITime(DT$Time, format="%H:%M:%S")
+
+hist(as.numeric(DT$Global_active_power), main="Global Active Power", 
+     xlab="Global Active Power (kilowatts)", col="red")
+dev.print(png, file = "plot1.PNG", width = 480, height = 480)
+dev.off()
